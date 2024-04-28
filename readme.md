@@ -40,6 +40,13 @@ cd build
 make
 ```
 
+## Pre-run setup
+Because the Python script and embedding codes are [not in the same directory](https://github.com/pybind/pybind11/issues/1719).
+```bash
+cd ../pybind11_python
+export PYTHONPATH="${PYTHONPATH}:$(pwd)/python"
+```
+
 ## Run
 ```bash
 python ./python/run.py

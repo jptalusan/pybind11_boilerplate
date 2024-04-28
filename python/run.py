@@ -1,8 +1,7 @@
 import sys
 import pandas as pd
 
-sys.path.append("build/")
-from MyLib import MyClass
+from build.MyLib import MyClass
 
 import matplotlib.pyplot as plt
 
