@@ -57,6 +57,15 @@ else()
     message(STATUS "PyTorch libraries not found.")
 endif()
 
+if(Boost_FOUND)
+    target_include_directories(${PROJECT_NAME} PRIVATE
+        ${Boost_LIBRARIES}
+    )
+else()
+    message(STATUS "Install boost via apt or build it first.")
+endif()
+
+
 set_target_properties(${PROJECT_NAME} 
     PROPERTIES POSITION_INDEPENDENT_CODE ON 
     CXX_STANDARD 17
@@ -66,7 +75,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${PYBIND11_INCLUDE_DIRS}
     ${PROJECT_SOURCE_DIR}/include
     ${EIGEN3_INCLUDE_DIR}
-    ${Boost_LIBRARIES}
 )
 
 # preprocessor definitions to #define VERSION_INFO
@@ -75,3 +83,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION_INFO=${EXAMPLE_VERSIO
 # Eigen is a header-only library, does not need to be linked against.
 # There's no binary library to link to, hence no need for a target_link_libraries command for Eigen.
 # target_link_libraries(${PROJECT_NAME} PRIVATE Eigen3::Eigen)
+
+# Link Boost libraries (if necessary), certain boost libraries are header-only
+# thus, does not need to be linked
+# target_link_libraries(boost_example ${Boost_LIBRARIES})

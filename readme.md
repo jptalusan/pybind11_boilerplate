@@ -28,7 +28,7 @@ tar -xzvf eigen-3.4.0.tar.gz
 export EIGEN3_INCLUDE_DIR=/absolute/path/to/eigen-3.4.0
 ```
 
-[Boost](https://www.boost.org/doc/libs/1_85_0/more/getting_started/unix-variants.html), you can install via `apt` or via building the code (see link).
+[Boost](https://www.boost.org/doc/libs/1_85_0/more/getting_started/unix-variants.html), you can install via `apt` or via building the code (see link). 
 ```bash
 sudo apt install libboost-all-dev
 ```
@@ -64,6 +64,9 @@ else()
 endif()
 ```
 
+Add boost similarly, see here for using boost in [cmake](https://cmake.org/cmake/help/latest/module/FindBoost.html).
+
+
 ## Build
 Because the Python script and embedding codes are [not in the same directory](https://github.com/pybind/pybind11/issues/1719), we need to make sure the `${PYTHONPATH}` is specified.
 ```bash
@@ -72,9 +75,7 @@ source ./set_env.sh
 cd pybind11_python
 cmake -S . -B build 
 # or cmake -Bbuild -DCMAKE_BUILD_TYPE=Release 
-cd build
-make
-cd ..
+(cd build && make)
 python ./python/run.py
 ```
 
@@ -122,5 +123,10 @@ Collection of notes
 * [Install openMP](https://www.mathworks.com/help/coder/ug/install-openmp-library-on-macos-platform.html) for Eigen [threading](https://eigen.tuxfamily.org/dox/TopicMultiThreading.html). 
     * I have not tried this yet.
 * [Modern openMP](https://cliutils.gitlab.io/modern-cmake/chapters/packages/OpenMP.html)
+* [OpenMP](https://askubuntu.com/questions/144352/how-can-i-install-openmp-in-ubuntu): What is OpenMP and how is it turned on in the CMakeLists.txt?
 * [Torch](https://pytorch.org/cppdocs/)
 * [Boost](https://stackoverflow.com/questions/125580/what-are-the-advantages-of-using-the-c-boost-libraries): Boost is a colelction of libraries that can fill then eeds of many C++ projects.
+* Why we don't have an `add_executable` in the `CMakeLists.txt`:
+    * The CMakeLists.txt provided does not need an add_executable command because it is not intended to build an executable program. Instead, it is designed to build a Python extension module using pybind11, which is why the pybind11_add_module command is used.
+    * The choice between add_executable and pybind11_add_module (or add_library for non-pybind11 libraries) depends on what you are trying to build. If you are building a standalone application, you would use add_executable. If you are building a library, whether it's a regular C++ library or a Python extension module, you would use add_library or pybind11_add_module, respectively.
+* Use `-DCMAKE_PREFIX_PATH` in cmake to lead to locations of built libraries.
