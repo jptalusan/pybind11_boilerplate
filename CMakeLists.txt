@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10...3.18)
+cmake_minimum_required(VERSION 3.10...3.30)
 
 # Or call cmake with -DCMAKE_PREFIX_PATH=/absolute/path/to/libtorch
 list(APPEND CMAKE_PREFIX_PATH "$ENV{TORCH_LIB_DIR}")
@@ -19,12 +19,22 @@ endif()
 
 set(PYBIND11_FINDPYTHON ON) # Use the FindPython module
 
+# To remove cmake warning regarding boost.
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
+
+# Under construction
+# set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp")
+# set(OpenMP_C_LIB_NAMES omp)
+# set(OpenMP_omp_LIBRARY ${OpenMP_C_LIB_NAMES})
+# set(OpenMP_C_INCLUDE_DIR "${CMAKE_PREFIX_PATH}/opt/libomp/include") # add this!
+
 find_package(pybind11 REQUIRED)
 find_package(OpenMP)
 find_package(Torch REQUIRED)
 # Use the filesystem component of boost.
-find_package(Boost 1.65 REQUIRED COMPONENTS filesystem)
-
+find_package(Boost 1.87 REQUIRED COMPONENTS filesystem)
 
 set( EIGEN3_INCLUDE_DIR "$ENV{EIGEN3_INCLUDE_DIR}" )
 if( NOT EIGEN3_INCLUDE_DIR )
@@ -45,10 +55,13 @@ if(OpenMP_CXX_FOUND)
     message(STATUS "OpenMP found, status:")
     message(STATUS "    libraries: OpenMP_CXX")
 endif()
+# Under construction
+# target_link_libraries(${PROJECT_NAME} PRIVATE ${CMAKE_PREFIX_PATH}/opt/libomp/lib) # add this!
 
 if(Torch_FOUND)
     target_link_libraries(${PROJECT_NAME} PRIVATE 
         ${TORCH_LIBRARIES}
+        ${TORCH_PYTHON_LIBRARY}
         pybind11::module
     )
     message(STATUS "PyTorch found, status:")
@@ -58,9 +71,11 @@ else()
 endif()
 
 if(Boost_FOUND)
-    target_include_directories(${PROJECT_NAME} PRIVATE
+    target_link_libraries(${PROJECT_NAME} PRIVATE
         ${Boost_LIBRARIES}
     )
+    message(STATUS "Boost found, status:")
+    message(STATUS "    libraries: ${Boost_LIBRARIES}")
 else()
     message(STATUS "Install boost via apt or build it first.")
 endif()

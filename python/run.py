@@ -42,3 +42,10 @@ print(type(vec))
 print("")
 print("Boost sample")
 m.boost_tokenizer()
+
+print("")
+print("Return tensor")
+tensor = return_tensor()
+print(return_tensor.__doc__)  # Output: This is the submodule docstring
+print(type(tensor))
+print(tensor)

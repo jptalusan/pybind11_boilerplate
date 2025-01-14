@@ -9,6 +9,8 @@
 
 using Eigen::Matrix, Eigen::Dynamic;
 typedef Matrix<std::complex<double>, Eigen::Dynamic, Eigen::Dynamic> myMatrix;
+// I cannot return tensor directly, so I will return a Eigen::MatrixXf
+typedef Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> MatrixXf_rm;
 
 // Sample code using Eigen and TypeDef
 myMatrix eigen_sample() {

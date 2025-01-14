@@ -10,27 +10,44 @@ cd pybind11_boilerplate
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements
+mkdir extlib
 ```
-> you can install `pybind11` instead of `pybind11[global]` it just didn't work on my ARM before.
+> For Mac/ARM devices, you need to install `pybind11[global]`. Otherwise, `pybind11` will be enough.
 
 ## Download Eigen, PyTorch and Boost
 [PyTorch](https://pytorch.org/cppdocs/installing.html): Build the C++ distribution of PyTorch. This allows us to use some PyTorch operations within C++. While it might not be faster than Python, everything else (non-torch) should be.
+
+For Linux/Ubuntu18.04+
 ```bash
 wget https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip
-unzip libtorch-shared-with-deps-latest.zip
+unzip libtorch-shared-with-deps-latest.zip -d extlib
+export TORCH_LIB_DIR=/absolute/path/to/libtorch
+```
+
+For Mac Silicon (ARM64)
+```bash
+wget https://download.pytorch.org/libtorch/nightly/cpu/libtorch-macos-arm64-latest.zip
+unzip libtorch-macos-arm64-latest.zip -d extlib
 export TORCH_LIB_DIR=/absolute/path/to/libtorch
 ```
 
 [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page): Eigen is a high-performance C++ library for linear algebra, including matrices, vectors, numerical solvers, and related algorithms. It is header-only, making it easy to include in projects, and it's known for its API ease-of-use and compile-time optimization.
 ```bash
 wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
-tar -xzvf eigen-3.4.0.tar.gz
+tar -xzvf eigen-3.4.0.tar.gz -C extlib
 export EIGEN3_INCLUDE_DIR=/absolute/path/to/eigen-3.4.0
 ```
 
 [Boost](https://www.boost.org/doc/libs/1_85_0/more/getting_started/unix-variants.html), you can install via `apt` or via building the code (see link). 
+
+For Linux/Ubuntu18.04+
 ```bash
 sudo apt install libboost-all-dev
+```
+
+For Mac
+```bash
+brew install boost
 ```
 
 ## Adding Libraries/Headers to CMakeLists.txt
@@ -74,10 +91,11 @@ Because the Python script and embedding codes are [not in the same directory](ht
 source ./set_env.sh
 cd pybind11_python
 cmake -S . -B build 
-# or cmake -Bbuild -DCMAKE_BUILD_TYPE=Release 
+# or cmake -Bbuild -DCMAKE_BUILD_TYPE=Release ..
 (cd build && make)
 python ./python/run.py
 ```
+> for some reason, on my mac, i can't get the python run.py to see my library, until I copy/paste the .so in the same directory as run.py.
 
 # Folder Structure
 The folder structure should be like this. Outside of this, you should have the `Eigen` and `PyTorch` folders.

@@ -8,9 +8,12 @@
 #include <pybind11/stl.h>
 #include "mylib.h"
 #include<boost/tokenizer.hpp>
+#include <torch/torch.h>
+
 namespace py = pybind11;
 constexpr auto byref = py::return_value_policy::reference_internal;
 
+// For functions that exist in a different file.
 void init_adder(py::module_ &);
 void init_show_zeroes(py::module_ &);
 
@@ -36,14 +39,24 @@ namespace module_a {
       }
 }
 
+
+Eigen::Map<MatrixXf_rm> return_tensor() {
+  at::Tensor t = at::zeros({2, 2});
+  float* data = t.data_ptr<float>();
+  Eigen::Map<MatrixXf_rm> E(data, t.size(0), t.size(1));
+  return E;
+}
+
 // Different methods of adding modules/submodules.
 PYBIND11_MODULE(MyLib, m) {
+    
     m.doc() = "optional module docstring";
 
     m.def("free_function", &free_function);
     m.def("eigen_sample", &eigen_sample);
     m.def("use_class_get_vector", &use_class_get_vector);
     m.def("boost_tokenizer", &boost_tokenizer);
+    m.def("return_tensor", &return_tensor, "A function that returns a tensor");
 
     py::class_<MyClass>(m, "MyClass")
     .def(py::init<double, double, int>())  
@@ -55,6 +68,8 @@ PYBIND11_MODULE(MyLib, m) {
     .def("vector_getter", &MyClass::vector_getter, "A public func, calling a private func.")
     ;
 
+
+    // For functions that exist in a different scope.
     auto m_a = m.def_submodule("module_a", "This is A.");
     m_a.def("func", &module_a::func);
 
